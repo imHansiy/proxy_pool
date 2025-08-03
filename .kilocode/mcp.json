@@ -2,22 +2,21 @@
   "mcpServers": {
     "fetch": {
       "command": "uvx",
-      "args": ["mcp-server-fetch"],
+      "args": [
+        "mcp-server-fetch"
+      ],
       "env": {
         "PYTHONIOENCODING": "utf-8"
-      }
+      },
+      "alwaysAllow": [
+        "fetch"
+      ]
     },
-      "MCP Docs": {
+    "MCP Docs": {
       "command": "npx",
       "args": [
         "mcp-remote",
         "https://gitmcp.io/docs"
-      ]
-    },
-    "playwright": {
-      "command": "npx",
-      "args": [
-        "@playwright/mcp@latest"
       ]
     }
   }
