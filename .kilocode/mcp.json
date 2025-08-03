@@ -13,6 +13,12 @@
         "mcp-remote",
         "https://gitmcp.io/docs"
       ]
+    },
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "@playwright/mcp@latest"
+      ]
     }
   }
 }

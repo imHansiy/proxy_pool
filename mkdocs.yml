@@ -1,0 +1,41 @@
+site_name: Proxy Pool
+site_description: 一个强大的、可扩展的代理池，提供稳定可靠的代理服务。
+site_author: Kilo Code
+
+theme:
+  name: material
+  language: zh
+  palette:
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - toc.integrate
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.tabs.link
+    - content.code.annotation
+    - content.code.copy
+
+# 指定文档源文件目录
+docs_dir: 'new_docs/docs'
+
+nav:
+  - '首页': 'index.md'
+  - '快速上手': 'getting_started.md'
+  - '配置详解': 'configuration.md'
+  - 'API 参考': 'api_reference.md'
+  - '开发者指南': 'developer_guide.md'

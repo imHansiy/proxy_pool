@@ -16,9 +16,10 @@
 """
 __author__ = 'JHao'
 
+import os
 import platform
 from werkzeug.wrappers import Response
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 
 from util.six import iteritems
 from helper.proxy import Proxy
@@ -51,9 +52,22 @@ api_list = [
 ]
 
 
+# site 目录的绝对路径
+site_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'site'))
+
+
 @app.route('/')
-def index():
-    return {'url': api_list}
+def docs_index():
+    return send_from_directory(site_dir, 'index.html')
+
+
+@app.route('/<path:path>')
+def docs_static_files(path):
+    # 如果路径指向一个目录，则尝试提供该目录下的 index.html
+    if os.path.isdir(os.path.join(site_dir, path)):
+        return send_from_directory(os.path.join(site_dir, path), 'index.html')
+    # 否则，直接提供请求的文件
+    return send_from_directory(site_dir, path)
 
 
 @app.route('/get/')

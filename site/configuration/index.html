@@ -1,0 +1,652 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="一个强大的、可扩展的代理池，提供稳定可靠的代理服务。">
+      
+      
+        <meta name="author" content="Kilo Code">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-8.4.4">
+    
+    
+      
+        <title>配置详解 - Proxy Pool</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.6b80c2a2.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.cbb835fc.min.css">
+        
+      
+      
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="" data-md-color-accent="">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href=".." title="Proxy Pool" class="md-header__button md-logo" aria-label="Proxy Pool" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Proxy Pool
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              配置详解
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      <form class="md-header__option" data-md-component="palette">
+        
+          
+          
+          <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="" data-md-color-accent=""  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+          
+            <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+            </label>
+          
+        
+          
+          
+          <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="" data-md-color-accent=""  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+          
+            <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+            </label>
+          
+        
+      </form>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="清空当前内容" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href=".." class="md-tabs__link">
+      首页
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../getting_started/" class="md-tabs__link">
+      快速上手
+    </a>
+  </li>
+
+      
+        
+  
+  
+    
+  
+
+
+  <li class="md-tabs__item">
+    <a href="./" class="md-tabs__link md-tabs__link--active">
+      配置详解
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../api_reference/" class="md-tabs__link">
+      API 参考
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../developer_guide/" class="md-tabs__link">
+      开发者指南
+    </a>
+  </li>
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Proxy Pool" class="md-nav__button md-logo" aria-label="Proxy Pool" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    Proxy Pool
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        首页
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting_started/" class="md-nav__link">
+        快速上手
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          配置详解
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        配置详解
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#server-config" class="md-nav__link">
+    服务配置 (Server Config)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#database-config" class="md-nav__link">
+    数据库配置 (Database Config)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#proxy-fetcher-config" class="md-nav__link">
+    代理抓取器配置 (Proxy Fetcher Config)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#proxy-validator-config" class="md-nav__link">
+    代理校验器配置 (Proxy Validator Config)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#proxy-attributes-config" class="md-nav__link">
+    代理属性配置 (Proxy Attributes Config)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scheduler-config" class="md-nav__link">
+    调度器配置 (Scheduler Config)
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api_reference/" class="md-nav__link">
+        API 参考
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../developer_guide/" class="md-nav__link">
+        开发者指南
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+
+
+<h1 id="_1">配置详解</h1>
+<p>Proxy Pool 的所有配置都在根目录的 <code>setting.py</code> 文件中进行管理。本页将详细解释每个配置项的作用、可选值和默认值。</p>
+<h2 id="server-config">服务配置 (<code>Server Config</code>)</h2>
+<p>这部分配置用于设置 API 服务。</p>
+<ul>
+<li>
+<p><strong><code>HOST</code></strong>:</p>
+<ul>
+<li><strong>作用</strong>: 指定 API 服务监听的 IP 地址。</li>
+<li><strong>默认值</strong>: <code>"0.0.0.0"</code></li>
+<li><strong>说明</strong>: <code>0.0.0.0</code> 表示服务将监听本机的所有网络接口，允许来自局域网或公网的访问。如果只想本机访问，可以设置为 <code>"127.0.0.1"</code>。</li>
+</ul>
+</li>
+<li>
+<p><strong><code>PORT</code></strong>:</p>
+<ul>
+<li><strong>作用</strong>: 指定 API 服务监听的端口。</li>
+<li><strong>默认值</strong>: <code>5010</code></li>
+<li><strong>说明</strong>: 确保该端口未被其他程序占用。</li>
+</ul>
+</li>
+</ul>
+<h2 id="database-config">数据库配置 (<code>Database Config</code>)</h2>
+<p>配置代理池所使用的数据库。</p>
+<ul>
+<li>
+<p><strong><code>DB_CONN</code></strong>:</p>
+<ul>
+<li><strong>作用</strong>: 数据库连接字符串 (URI)。</li>
+<li><strong>默认值</strong>: <code>'redis://:pwd@127.0.0.1:6379/0'</code></li>
+<li><strong>格式</strong>:<ul>
+<li><strong>Redis</strong>: <code>redis://:password@host:port/db</code></li>
+<li><strong>SSDB</strong>: <code>ssdb://:password@host:port</code></li>
+</ul>
+</li>
+<li><strong>说明</strong>: 这是项目最关键的配置之一。请根据你的数据库信息正确填写。如果 Redis 没有密码，可以省略密码部分，例如：<code>redis://@127.0.0.1:6379/0</code>。</li>
+</ul>
+</li>
+<li>
+<p><strong><code>TABLE_NAME</code></strong>:</p>
+<ul>
+<li><strong>作用</strong>: 在数据库中存储代理所使用的数据结构名称（对于 Redis 来说是 Hash 的键名）。</li>
+<li><strong>默认值</strong>: <code>'use_proxy'</code></li>
+</ul>
+</li>
+</ul>
+<h2 id="proxy-fetcher-config">代理抓取器配置 (<code>Proxy Fetcher Config</code>)</h2>
+<p>配置要启用的代理来源。</p>
+<ul>
+<li><strong><code>PROXY_FETCHER</code></strong>:<ul>
+<li><strong>作用</strong>: 一个列表，包含了所有要启用的代理抓取器的名称。</li>
+<li><strong>默认值</strong>:
+    <code>python
+    [
+        "freeProxy01", "freeProxy02", "freeProxy03", "freeProxy04",
+        "freeProxy05", "freeProxy06", "freeProxy07", "freeProxy08",
+        "freeProxy09", "freeProxy10", "freeProxy11"
+    ]</code></li>
+<li><strong>说明</strong>: 列表中的每个字符串都对应 <code>fetcher/proxyFetcher.py</code> 文件中的一个抓取方法。你可以按需增删，或者添加自定义的抓取器。</li>
+</ul>
+</li>
+</ul>
+<h2 id="proxy-validator-config">代理校验器配置 (<code>Proxy Validator Config</code>)</h2>
+<p>配置代理校验相关的参数。</p>
+<ul>
+<li>
+<p><strong><code>HTTP_URL</code></strong>:</p>
+<ul>
+<li><strong>作用</strong>: 校验代理是否支持 HTTP 时请求的目标网站。</li>
+<li><strong>默认值</strong>: <code>"http://httpbin.org"</code></li>
+<li><strong>说明</strong>: 建议选择一个稳定且能快速响应的网站。</li>
+</ul>
+</li>
+<li>
+<p><strong><code>HTTPS_URL</code></strong>:</p>
+<ul>
+<li><strong>作用</strong>: 校验代理是否支持 HTTPS 时请求的目标网站。</li>
+<li><strong>默认值</strong>: <code>"https://www.qq.com"</code></li>
+</ul>
+</li>
+<li>
+<p><strong><code>VERIFY_TIMEOUT</code></strong>:</p>
+<ul>
+<li><strong>作用</strong>: 校验代理时的网络请求超时时间（单位：秒）。</li>
+<li><strong>默认值</strong>: <code>10</code></li>
+</ul>
+</li>
+<li>
+<p><strong><code>MAX_FAIL_COUNT</code></strong>:</p>
+<ul>
+<li><strong>作用</strong>: 允许代理连续校验失败的最大次数。当一个代理的累计失败次数超过该值时，它将被从代理池中移除。</li>
+<li><strong>默认值</strong>: <code>0</code> (在 2.4.0 版本中，这意味着一次失败就可能被标记为待移除, 但具体行为取决于校验逻辑)</li>
+</ul>
+</li>
+<li>
+<p><strong><code>POOL_SIZE_MIN</code></strong>:</p>
+<ul>
+<li><strong>作用</strong>: 代理池的最小容量阈值。当可用代理数量低于此值时，调度器会立即触发新一轮的代理抓取任务。</li>
+<li><strong>默认值</strong>: <code>20</code></li>
+</ul>
+</li>
+</ul>
+<h2 id="proxy-attributes-config">代理属性配置 (<code>Proxy Attributes Config</code>)</h2>
+<ul>
+<li><strong><code>PROXY_REGION</code></strong>:<ul>
+<li><strong>作用</strong>: 是否启用代理的地理位置归属地分析。</li>
+<li><strong>默认值</strong>: <code>True</code></li>
+<li><strong>说明</strong>: 开启后，系统会尝试识别每个代理的地理位置（国家/城市），但这会消耗额外的系统资源。如果不需要此功能，可以设置为 <code>False</code>。</li>
+</ul>
+</li>
+</ul>
+<h2 id="scheduler-config">调度器配置 (<code>Scheduler Config</code>)</h2>
+<ul>
+<li><strong><code>TIMEZONE</code></strong>:<ul>
+<li><strong>作用</strong>: 强制为调度器设置时区。</li>
+<li><strong>默认值</strong>: <code>"Asia/Shanghai"</code></li>
+<li><strong>说明</strong>: 通常情况下，调度器会自动检测系统时区。但是，如果在虚拟机或容器环境中遇到时区错误 (例如 <code>ValueError: Timezone offset does not match system offset</code>)，你可以通过取消注释并设置此项来解决。</li>
+</ul>
+</li>
+</ul>
+
+
+
+
+
+              
+            </article>
+            
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var tab,labels=set.querySelector(".tabbed-labels");for(tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+          </div>
+        </div>
+        
+          <a href="#" class="md-top md-icon" data-md-component="top" hidden>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+            回到页面顶部
+          </a>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="页脚" >
+      
+        
+        <a href="../getting_started/" class="md-footer__link md-footer__link--prev" aria-label="上一页: 快速上手" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              快速上手
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../api_reference/" class="md-footer__link md-footer__link--next" aria-label="下一页: API 参考" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              API 参考
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.sections", "toc.integrate", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.annotation", "content.code.copy"], "search": "../assets/javascripts/workers/search.ecf98df9.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.config.lang": "ja", "search.config.pipeline": "trimmer, stemmer", "search.config.separator": "[\\s\\-\uff0c\u3002]+", "search.placeholder": "\u641c\u7d22", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version.title": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.2ab50757.min.js"></script>
+      
+    
+  </body>
+</html>
