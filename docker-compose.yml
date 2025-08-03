@@ -3,6 +3,8 @@ services:
   proxy_pool:
     build: .
     container_name: proxy_pool
+    volumes:
+      - .:/app
     ports:
       - "5010:5010"
     links:

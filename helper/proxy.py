@@ -18,7 +18,8 @@ import json
 class Proxy(object):
 
     def __init__(self, proxy, fail_count=0, region="", anonymous="",
-                 source="", check_count=0, last_status="", last_time="", https=False):
+                 source="", check_count=0, last_status="", last_time="", https=False,
+                 username=None, password=None, protocol='http'):
         self._proxy = proxy
         self._fail_count = fail_count
         self._region = region
@@ -28,6 +29,9 @@ class Proxy(object):
         self._last_status = last_status
         self._last_time = last_time
         self._https = https
+        self._username = username
+        self._password = password
+        self._protocol = protocol
 
     @classmethod
     def createFromJson(cls, proxy_json):
@@ -40,7 +44,10 @@ class Proxy(object):
                    check_count=_dict.get("check_count", 0),
                    last_status=_dict.get("last_status", ""),
                    last_time=_dict.get("last_time", ""),
-                   https=_dict.get("https", False)
+                   https=_dict.get("https", False),
+                   username=_dict.get("username"),
+                   password=_dict.get("password"),
+                   protocol=_dict.get("protocol", "http")
                    )
 
     @property
@@ -89,6 +96,29 @@ class Proxy(object):
         return self._https
 
     @property
+    def username(self):
+        """用户名"""
+        return self._username
+
+    @property
+    def password(self):
+        """密码"""
+        return self._password
+
+    @property
+    def protocol(self):
+        """协议"""
+        return self._protocol
+
+    @property
+    def uri(self):
+        """ proxy uri """
+        if self.username and self.password:
+            return "{}://{}:{}@{}".format(self.protocol, self.username, self.password, self.proxy)
+        else:
+            return "{}://{}".format(self.protocol, self.proxy)
+
+    @property
     def to_dict(self):
         """ 属性字典 """
         return {"proxy": self.proxy,
@@ -99,7 +129,10 @@ class Proxy(object):
                 "source": self.source,
                 "check_count": self.check_count,
                 "last_status": self.last_status,
-                "last_time": self.last_time}
+                "last_time": self.last_time,
+                "username": self.username,
+                "password": self.password,
+                "protocol": self.protocol}
 
     @property
     def to_json(self):

@@ -58,14 +58,14 @@ class DoValidator(object):
     @classmethod
     def httpValidator(cls, proxy):
         for func in ProxyValidator.http_validator:
-            if not func(proxy.proxy):
+            if not func(proxy.uri):
                 return False
         return True
 
     @classmethod
     def httpsValidator(cls, proxy):
         for func in ProxyValidator.https_validator:
-            if not func(proxy.proxy):
+            if not func(proxy.uri):
                 return False
         return True
 

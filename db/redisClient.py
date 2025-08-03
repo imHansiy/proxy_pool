@@ -27,7 +27,7 @@ class RedisClient(object):
     Redis client
 
     Redis中代理存放的结构为hash：
-    key为ip:port, value为代理属性的字典;
+    key为proxy.uri, value为代理属性的字典;
 
     """
 
@@ -67,7 +67,7 @@ class RedisClient(object):
         :param proxy_obj: Proxy obj
         :return:
         """
-        data = self.__conn.hset(self.name, proxy_obj.proxy, proxy_obj.to_json)
+        data = self.__conn.hset(self.name, proxy_obj.uri, proxy_obj.to_json)
         return data
 
     def pop(self, https):
@@ -77,24 +77,24 @@ class RedisClient(object):
         """
         proxy = self.get(https)
         if proxy:
-            self.__conn.hdel(self.name, json.loads(proxy).get("proxy", ""))
+            self.__conn.hdel(self.name, json.loads(proxy).get("uri", ""))
         return proxy if proxy else None
 
-    def delete(self, proxy_str):
+    def delete(self, proxy_obj):
         """
         移除指定代理, 使用changeTable指定hash name
-        :param proxy_str: proxy str
+        :param proxy_obj: proxy obj
         :return:
         """
-        return self.__conn.hdel(self.name, proxy_str)
+        return self.__conn.hdel(self.name, proxy_obj.uri)
 
-    def exists(self, proxy_str):
+    def exists(self, proxy_obj):
         """
         判断指定代理是否存在, 使用changeTable指定hash name
-        :param proxy_str: proxy str
+        :param proxy_obj: proxy obj
         :return:
         """
-        return self.__conn.hexists(self.name, proxy_str)
+        return self.__conn.hexists(self.name, proxy_obj.uri)
 
     def update(self, proxy_obj):
         """
@@ -102,7 +102,7 @@ class RedisClient(object):
         :param proxy_obj:
         :return:
         """
-        return self.__conn.hset(self.name, proxy_obj.proxy, proxy_obj.to_json)
+        return self.__conn.hset(self.name, proxy_obj.uri, proxy_obj.to_json)
 
     def getAll(self, https):
         """

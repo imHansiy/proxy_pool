@@ -93,8 +93,8 @@ def refresh():
 @app.route('/all/')
 def getAll():
     https = request.args.get("type", "").lower() == 'https'
-    proxies = proxy_handler.getAll(https)
-    return jsonify([_.to_dict for _ in proxies])
+    proxies = proxy_handler.getAll(https=https)
+    return jsonify([p.to_dict for p in proxies])
 
 
 @app.route('/delete/', methods=['GET'])

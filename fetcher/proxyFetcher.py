@@ -115,10 +115,11 @@ class ProxyFetcher(object):
             if table:
                 for row in table.find('tbody').find_all('tr'):
                     columns = row.find_all('td')
-                    if len(columns) > 1:
+                    if len(columns) > 2:
                         ip = columns[0].text.strip()
                         port = columns[1].text.strip()
-                        yield f"{ip}:{port}"
+                        protocol = columns[2].text.strip().lower()
+                        yield {'protocol': protocol, 'ip': ip, 'port': port}
 
 if __name__ == '__main__':
     p = ProxyFetcher()
