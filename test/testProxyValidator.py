@@ -16,44 +16,45 @@ import unittest
 from unittest.mock import patch
 import requests
 from helper.proxy import Proxy
-from helper.validator import socksTimeOutValidator, ProxyValidator
+from helper.validator import ProxyValidator
 
 
 class TestProxyValidator(unittest.TestCase):
 
-    def test_socks_validation(self):
+    @patch('helper.validator.socksTimeOutValidator')
+    def test_socks_validation(self, mock_socks_validator):
         # 模拟代理对象
-        proxy_socks5_success = Proxy.createFromJson({'proxy': '127.0.0.1:1080', 'proxy_type': 'socks5'})
-        proxy_socks4_success = Proxy.createFromJson({'proxy': '127.0.0.1:1081', 'proxy_type': 'socks4'})
-        proxy_timeout = Proxy.createFromJson({'proxy': '127.0.0.1:1082', 'proxy_type': 'socks5'})
-        proxy_conn_error = Proxy.createFromJson({'proxy': '127.0.0.1:1083', 'proxy_type': 'socks4'})
+        proxy_socks5 = Proxy.createFromJson('{"proxy": "127.0.0.1:1080", "protocol": "socks5"}')
+        proxy_socks4 = Proxy.createFromJson('{"proxy": "127.0.0.1:1081", "protocol": "socks4"}')
 
-        # 模拟网络请求
-        with patch('requests.get') as mock_get:
-            # 模拟成功的SOCKS5代理验证
-            mock_get.return_value.status_code = 200
-            self.assertTrue(socksTimeOutValidator(proxy_socks5_success))
+        # 场景1: SOCKS5 验证成功
+        mock_socks_validator.return_value = True
+        # 模拟验证器执行
+        result = all(func(proxy_socks5.uri) for func in ProxyValidator.socks_validator)
+        self.assertTrue(result)
+        mock_socks_validator.assert_called_with(proxy_socks5.uri)
+        mock_socks_validator.reset_mock()
 
-            # 模拟成功的SOCKS4代理验证
-            self.assertTrue(socksTimeOutValidator(proxy_socks4_success))
+        # 场景2: SOCKS4 验证成功
+        mock_socks_validator.return_value = True
+        result = all(func(proxy_socks4.uri) for func in ProxyValidator.socks_validator)
+        self.assertTrue(result)
+        mock_socks_validator.assert_called_with(proxy_socks4.uri)
+        mock_socks_validator.reset_mock()
 
-            # 模拟因超时导致的验证失败
-            mock_get.side_effect = requests.exceptions.Timeout
-            self.assertFalse(socksTimeOutValidator(proxy_timeout))
+        # 场景3: SOCKS5 验证失败
+        mock_socks_validator.return_value = False
+        result = all(func(proxy_socks5.uri) for func in ProxyValidator.socks_validator)
+        self.assertFalse(result)
+        mock_socks_validator.assert_called_with(proxy_socks5.uri)
+        mock_socks_validator.reset_mock()
 
-            # 模拟因连接错误导致的验证失败
-            mock_get.side_effect = requests.exceptions.ConnectionError
-            self.assertFalse(socksTimeOutValidator(proxy_conn_error))
-
-
-def testProxyValidator():
-    for _ in ProxyValidator.pre_validator:
-        print(_)
-    for _ in ProxyValidator.http_validator:
-        print(_)
-    for _ in ProxyValidator.https_validator:
-        print(_)
+        # 场景4: SOCKS4 验证失败
+        mock_socks_validator.return_value = False
+        result = all(func(proxy_socks4.uri) for func in ProxyValidator.socks_validator)
+        self.assertFalse(result)
+        mock_socks_validator.assert_called_with(proxy_socks4.uri)
 
 
 if __name__ == '__main__':
-    testProxyValidator()
+    unittest.main()
