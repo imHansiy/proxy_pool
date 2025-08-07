@@ -37,7 +37,7 @@ PORT = 5010
 # example:
 #      Redis: redis://:password@ip:port/db
 #      Ssdb:  ssdb://:password@ip:port
-DB_CONN = 'redis://:pwd@proxy_redis:6379/0'
+DB_CONN = 'redis://default:ZvSZ2gadfbKZhmDWgYmlpqSsnJB8bGeP@redis-15469.c17.us-east-1-4.ec2.redns.redis-cloud.com:15469'
 
 # proxy table name
 TABLE_NAME = 'use_proxy'
@@ -64,6 +64,8 @@ PROXY_FETCHER = [
 HTTP_URL = "http://httpbin.org"
 
 HTTPS_URL = "https://www.qq.com"
+
+HTTPS_TEST_URL = "https://www.qq.com"
 
 # 代理验证时超时时间
 VERIFY_TIMEOUT = 10

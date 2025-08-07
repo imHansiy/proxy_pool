@@ -12,7 +12,7 @@
 """
 __author__ = 'J_hao'
 
-from requests.models import Response
+from requests import Response
 from lxml import etree
 import requests
 import random

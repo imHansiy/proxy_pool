@@ -18,6 +18,7 @@ from time import sleep
 from bs4 import BeautifulSoup
 
 from util.webRequest import WebRequest
+from helper.proxy import Proxy
 
 
 class ProxyFetcher(object):
@@ -25,6 +26,17 @@ class ProxyFetcher(object):
     proxy getter
     """
 
+    def __init__(self, strategy="all"):
+        self.__proxies__ = []
+        self.fetch_funcs = [
+            self.freeProxy05,
+            self.freeProxy06,
+            self.freeProxy07,
+            self.freeProxy09,
+            self.freeProxy10,
+            # self.freeProxy11,
+            self.freeProxy12,
+        ]
 
     @staticmethod
     def freeProxy05(page_count=1):
@@ -43,7 +55,7 @@ class ProxyFetcher(object):
             proxy_list = tree.xpath('.//table//tr')
             sleep(1)  # 必须sleep 不然第二条请求不到数据
             for tr in proxy_list[1:]:
-                yield ':'.join(tr.xpath('./td/text()')[0:2])
+                yield Proxy(':'.join(tr.xpath('./td/text()')[0:2]))
 
     @staticmethod
     def freeProxy06():
@@ -53,7 +65,7 @@ class ProxyFetcher(object):
             tree = WebRequest().get(url).tree
             proxy_list = tree.xpath('.//table//tr')
             for tr in proxy_list[1:]:
-                yield ':'.join(tr.xpath('./td/text()')[0:2])
+                yield Proxy(':'.join(tr.xpath('./td/text()')[0:2]))
         except Exception as e:
             print(e)
 
@@ -65,7 +77,7 @@ class ProxyFetcher(object):
             r = WebRequest().get(url, timeout=10)
             proxies = re.findall(r'<td>(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})</td>[\s\S]*?<td>(\d+)</td>', r.text)
             for proxy in proxies:
-                yield ":".join(proxy)
+                yield Proxy(":".join(proxy))
 
 
     @staticmethod
@@ -77,7 +89,7 @@ class ProxyFetcher(object):
             for index, tr in enumerate(html_tree.xpath("//table//tr")):
                 if index == 0:
                     continue
-                yield ":".join(tr.xpath("./td/text()")[0:2]).strip()
+                yield Proxy(":".join(tr.xpath("./td/text()")[0:2]).strip())
 
     @staticmethod
     def freeProxy10():
@@ -87,7 +99,7 @@ class ProxyFetcher(object):
             r'<td.*?>[\s\S]*?(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})[\s\S]*?</td>[\s\S]*?<td.*?>[\s\S]*?(\d+)[\s\S]*?</td>',
             r.text)
         for proxy in proxies:
-            yield ':'.join(proxy)
+            yield Proxy(':'.join(proxy))
 
     @staticmethod
     def freeProxy11():
@@ -95,7 +107,7 @@ class ProxyFetcher(object):
         r = WebRequest().get("https://www.docip.net/data/free.json", timeout=10)
         try:
             for each in r.json['data']:
-                yield each['ip']
+                yield Proxy(each['ip'])
         except Exception as e:
             print(e)
 
@@ -107,14 +119,16 @@ class ProxyFetcher(object):
         url = "https://francevpn.github.io/free-proxy"
         r = WebRequest().get(url, timeout=10)
         soup = BeautifulSoup(r.text, 'html.parser')
-        table = soup.find('table', attrs={'class': 'table table-striped table-bordered'})
+        table = soup.find('table', attrs={'class': 'table table-hover table-striped'})
         for row in table.find('tbody').find_all('tr'):
             columns = row.find_all('td')
             if len(columns) > 4:
                 ip = columns[0].text.strip()
                 port = columns[1].text.strip()
-                protocol = columns[4].text.strip().lower()  # SOCKS4/SOCKS5
-                yield {"ip": ip, "port": port, "protocol": protocol}
+                country = columns[2].text.strip()
+                protocol = columns[4].text.strip().lower()
+                yield Proxy(proxy='{}:{}'.format(ip, port), protocol=protocol, region=country, source="freeProxy12")
+
 
 if __name__ == '__main__':
     p = ProxyFetcher()

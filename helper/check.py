@@ -42,8 +42,7 @@ class DoValidator(object):
         valid_map = {
             "http": cls.httpValidator,
             "https": cls.httpsValidator,
-            "socks4": cls.socksValidator,
-            "socks5": cls.socksValidator
+            "socks": cls.socksValidator,
         }
         validator = valid_map.get(proxy.protocol)
         if not validator:
@@ -128,6 +127,11 @@ class _ThreadChecker(Thread):
             except Empty:
                 self.log.info("{}ProxyCheck - {}: complete".format(self.work_type.title(), self.name))
                 break
+    
+            from helper.proxy import Proxy
+            if isinstance(proxy, str):
+                proxy = Proxy(proxy)
+    
             proxy = DoValidator.validator(proxy, self.work_type)
             if self.work_type == "raw":
                 self.__ifRaw(proxy)

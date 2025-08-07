@@ -40,9 +40,8 @@ class _ThreadFetcher(Thread):
                     self.log.info(f'ProxyFetch - {self.fetch_source}: {proxy["ip"]}:{proxy["port"]} ok')
                     p = Proxy(f'{proxy["ip"]}:{proxy["port"]}', source=self.fetch_source, protocol=proxy["protocol"])
                 else:
-                    self.log.info(f'ProxyFetch - {self.fetch_source}: {proxy.ljust(23)} ok')
-                    proxy = proxy.strip()
-                    p = Proxy(proxy, source=self.fetch_source)
+                    self.log.info(f'ProxyFetch - {self.fetch_source}: {proxy.proxy.ljust(23)} ok')
+                    p = Proxy(proxy.proxy.strip(), source=self.fetch_source)
 
                 if p.proxy in self.proxy_dict:
                     self.proxy_dict[p.proxy].add_source(self.fetch_source)

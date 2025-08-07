@@ -75,7 +75,7 @@ class ProxyHandler(object):
         :param proxy:
         :return:
         """
-        return self.db.exists(proxy.proxy)
+        return self.db.exists(proxy)
 
     def getCount(self):
         """

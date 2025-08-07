@@ -95,9 +95,9 @@ def customValidatorExample(proxy):
 @ProxyValidator.addSocksValidator
 def socksTimeOutValidator(proxy):
     """ socks检测超时 """
-    proxies = {"http": proxy, "https": proxy}
+    proxies = {'http': 'socks5://' + proxy, 'https': 'socks5://' + proxy}
     try:
-        r = head("http://httpbin.org/ip", headers=HEADER, proxies=proxies, timeout=conf.verifyTimeout)
+        r = head(conf.httpsUrl, headers=HEADER, proxies=proxies, timeout=conf.verifyTimeout, verify=False)
         return True if r.status_code == 200 else False
     except Exception:
         return False
