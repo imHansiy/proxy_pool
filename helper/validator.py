@@ -32,6 +32,7 @@ class ProxyValidator(withMetaclass(Singleton)):
     pre_validator = []
     http_validator = []
     https_validator = []
+    socks_validator = []
 
     @classmethod
     def addPreValidator(cls, func):
@@ -48,6 +49,11 @@ class ProxyValidator(withMetaclass(Singleton)):
         cls.https_validator.append(func)
         return func
 
+    @classmethod
+    def addSocksValidator(cls, func):
+        cls.socks_validator.append(func)
+        return func
+
 
 @ProxyValidator.addPreValidator
 def formatValidator(proxy):
@@ -59,7 +65,7 @@ def formatValidator(proxy):
 def httpTimeOutValidator(proxy):
     """ http检测超时 """
 
-    proxies = {"http": "http://{proxy}".format(proxy=proxy), "https": "https://{proxy}".format(proxy=proxy)}
+    proxies = {"http": proxy, "https": proxy}
 
     try:
         r = head(conf.httpUrl, headers=HEADER, proxies=proxies, timeout=conf.verifyTimeout)
@@ -72,7 +78,7 @@ def httpTimeOutValidator(proxy):
 def httpsTimeOutValidator(proxy):
     """https检测超时"""
 
-    proxies = {"http": "http://{proxy}".format(proxy=proxy), "https": "https://{proxy}".format(proxy=proxy)}
+    proxies = {"http": proxy, "https": proxy}
     try:
         r = head(conf.httpsUrl, headers=HEADER, proxies=proxies, timeout=conf.verifyTimeout, verify=False)
         return True if r.status_code == 200 else False
@@ -84,3 +90,14 @@ def httpsTimeOutValidator(proxy):
 def customValidatorExample(proxy):
     """自定义validator函数，校验代理是否可用, 返回True/False"""
     return True
+
+
+@ProxyValidator.addSocksValidator
+def socksTimeOutValidator(proxy):
+    """ socks检测超时 """
+    proxies = {"http": proxy, "https": proxy}
+    try:
+        r = head("http://httpbin.org/ip", headers=HEADER, proxies=proxies, timeout=conf.verifyTimeout)
+        return True if r.status_code == 200 else False
+    except Exception:
+        return False

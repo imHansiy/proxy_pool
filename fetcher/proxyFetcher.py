@@ -100,26 +100,21 @@ class ProxyFetcher(object):
             print(e)
 
     @staticmethod
-    def freeProxy12(page_count=255):
+    def freeProxy12():
         """
-        francevpn https://francevpn.github.io/free-proxy/
+        https://francevpn.github.io/free-proxy
         """
-        url_list = ['https://francevpn.github.io/free-proxy/']
-        if page_count > 1:
-            url_list.extend(
-                ['https://francevpn.github.io/free-proxy/page-{}.htm'.format(i) for i in range(2, page_count + 1)])
-        for url in url_list:
-            r = WebRequest().get(url, timeout=10)
-            soup = BeautifulSoup(r.text, 'html.parser')
-            table = soup.find('table')
-            if table:
-                for row in table.find('tbody').find_all('tr'):
-                    columns = row.find_all('td')
-                    if len(columns) > 2:
-                        ip = columns[0].text.strip()
-                        port = columns[1].text.strip()
-                        protocol = columns[2].text.strip().lower()
-                        yield {'protocol': protocol, 'ip': ip, 'port': port}
+        url = "https://francevpn.github.io/free-proxy"
+        r = WebRequest().get(url, timeout=10)
+        soup = BeautifulSoup(r.text, 'html.parser')
+        table = soup.find('table', attrs={'class': 'table table-striped table-bordered'})
+        for row in table.find('tbody').find_all('tr'):
+            columns = row.find_all('td')
+            if len(columns) > 4:
+                ip = columns[0].text.strip()
+                port = columns[1].text.strip()
+                protocol = columns[4].text.strip().lower()  # SOCKS4/SOCKS5
+                yield {"ip": ip, "port": port, "protocol": protocol}
 
 if __name__ == '__main__':
     p = ProxyFetcher()

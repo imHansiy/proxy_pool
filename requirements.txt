@@ -15,3 +15,5 @@ beautifulsoup4
 mkdocs
 mkdocs-material
 PySocks
+
+PySocks

@@ -39,16 +39,32 @@ class DoValidator(object):
         Returns:
             Proxy Object
         """
-        http_r = cls.httpValidator(proxy)
-        https_r = False if not http_r else cls.httpsValidator(proxy)
+        valid_map = {
+            "http": cls.httpValidator,
+            "https": cls.httpsValidator,
+            "socks4": cls.socksValidator,
+            "socks5": cls.socksValidator
+        }
+        validator = valid_map.get(proxy.protocol)
+        if not validator:
+            # 默认使用http验证
+            validator = cls.httpValidator
+
+        result = validator(proxy)
 
         proxy.check_count += 1
         proxy.last_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        proxy.last_status = True if http_r else False
-        if http_r:
+        proxy.last_status = True if result else False
+        if result:
             if proxy.fail_count > 0:
                 proxy.fail_count -= 1
-            proxy.https = True if https_r else False
+            if proxy.protocol.startswith('socks'):
+                proxy.https = True  # SOCKS代理默认支持https
+            elif proxy.protocol == 'https':
+                proxy.https = True
+            else:
+                proxy.https = cls.httpsValidator(proxy)
+
             if work_type == "raw":
                 proxy.region = cls.regionGetter(proxy) if cls.conf.proxyRegion else ""
         else:
@@ -65,6 +81,13 @@ class DoValidator(object):
     @classmethod
     def httpsValidator(cls, proxy):
         for func in ProxyValidator.https_validator:
+            if not func(proxy.uri):
+                return False
+        return True
+
+    @classmethod
+    def socksValidator(cls, proxy):
+        for func in ProxyValidator.socks_validator:
             if not func(proxy.uri):
                 return False
         return True
