@@ -13,9 +13,7 @@
 """
 __author__ = 'JHao'
 
-from apscheduler.schedulers.blocking import BlockingScheduler
-from apscheduler.executors.pool import ProcessPoolExecutor
-
+import time
 from util.six import Queue
 from helper.fetch import Fetcher
 from helper.check import Checker
@@ -44,27 +42,25 @@ def __runProxyCheck():
     Checker("use", proxy_queue)
 
 
-def runScheduler():
-    __runProxyFetch()
+def runScheduler(now=False):
+    if now:
+        __runProxyCheck()
+        return
 
-    timezone = ConfigHandler().timezone
-    scheduler_log = LogHandler("scheduler")
-    scheduler = BlockingScheduler(logger=scheduler_log, timezone=timezone)
+    log = LogHandler("scheduler")
+    log.info("Starting scheduler...")
 
-    scheduler.add_job(__runProxyFetch, 'interval', minutes=4, id="proxy_fetch", name="proxy采集")
-    scheduler.add_job(__runProxyCheck, 'interval', minutes=2, id="proxy_check", name="proxy检查")
-    executors = {
-        'default': {'type': 'threadpool', 'max_workers': 20},
-        'processpool': ProcessPoolExecutor(max_workers=5)
-    }
-    job_defaults = {
-        'coalesce': False,
-        'max_instances': 10
-    }
+    while True:
+        log.info("Starting proxy fetch...")
+        __runProxyFetch()
+        log.info("Proxy fetch finished.")
 
-    scheduler.configure(executors=executors, job_defaults=job_defaults, timezone=timezone)
+        log.info("Starting proxy check...")
+        __runProxyCheck()
+        log.info("Proxy check finished.")
 
-    scheduler.start()
+        log.info("Scheduler sleeping for 1 second...")
+        time.sleep(1)
 
 
 if __name__ == '__main__':

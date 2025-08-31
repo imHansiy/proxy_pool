@@ -61,9 +61,9 @@ PROXY_FETCHER = [
 
 # ############# proxy validator #################
 # 代理验证目标网站
-HTTP_URL = "http://httpbin.org"
+HTTP_URL = "http://iprust.io/ip.json"
 
-HTTPS_URL = "https://www.qq.com"
+HTTPS_URL = "https://httpbin.org/get"
 
 HTTPS_TEST_URL = "https://www.qq.com"
 

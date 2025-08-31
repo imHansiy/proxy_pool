@@ -26,10 +26,10 @@ def startServer():
     runFlask()
 
 
-def startScheduler():
+def startScheduler(now=False):
     __beforeStart()
     from helper.scheduler import runScheduler
-    runScheduler()
+    runScheduler(now)
 
 
 def __beforeStart():

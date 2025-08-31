@@ -61,6 +61,8 @@ def formatValidator(proxy):
     return True if IP_REGEX.fullmatch(proxy) else False
 
 
+from requests import get
+
 @ProxyValidator.addHttpValidator
 def httpTimeOutValidator(proxy):
     """ http检测超时 """
@@ -68,8 +70,10 @@ def httpTimeOutValidator(proxy):
     proxies = {"http": proxy, "https": proxy}
 
     try:
-        r = head(conf.httpUrl, headers=HEADER, proxies=proxies, timeout=conf.verifyTimeout)
-        return True if r.status_code == 200 else False
+        r = get(conf.httpUrl, headers=HEADER, proxies=proxies, timeout=conf.verifyTimeout)
+        if r.status_code == 200 and r.json().get("ip"):
+            return True
+        return False
     except Exception as e:
         return False
 
@@ -80,8 +84,10 @@ def httpsTimeOutValidator(proxy):
 
     proxies = {"http": proxy, "https": proxy}
     try:
-        r = head(conf.httpsUrl, headers=HEADER, proxies=proxies, timeout=conf.verifyTimeout, verify=False)
-        return True if r.status_code == 200 else False
+        r = get(conf.httpsUrl, headers=HEADER, proxies=proxies, timeout=conf.verifyTimeout, verify=False)
+        if r.status_code == 200 and r.json().get("ip"):
+            return True
+        return False
     except Exception as e:
         return False
 

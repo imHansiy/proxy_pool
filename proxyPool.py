@@ -26,10 +26,11 @@ def cli():
 
 
 @cli.command(name="schedule")
-def schedule():
+@click.option('--now', is_flag=True, help="立即执行一次检查")
+def schedule(now):
     """ 启动调度程序 """
     click.echo(BANNER)
-    startScheduler()
+    startScheduler(now)
 
 
 @cli.command(name="server")

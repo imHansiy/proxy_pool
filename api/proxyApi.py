@@ -25,6 +25,7 @@ from util.six import iteritems
 from helper.proxy import Proxy
 from handler.proxyHandler import ProxyHandler
 from handler.configHandler import ConfigHandler
+from helper.validator import httpTimeOutValidator, httpsTimeOutValidator
 
 app = Flask(__name__)
 conf = ConfigHandler()
@@ -73,15 +74,23 @@ def docs_static_files(path):
 @app.route('/get/')
 def get():
     https = request.args.get("type", "").lower() == 'https'
-    proxy = proxy_handler.get(https)
-    return proxy.to_dict if proxy else {"code": 0, "src": "no proxy"}
+    validator = httpsTimeOutValidator if https else httpTimeOutValidator
+    for _ in range(10):  # 最多尝试10次
+        proxy = proxy_handler.get(https)
+        if proxy and validator(proxy.proxy):
+            return proxy.to_dict
+    return {"code": 0, "src": "no proxy"}
 
 
 @app.route('/pop/')
 def pop():
     https = request.args.get("type", "").lower() == 'https'
-    proxy = proxy_handler.pop(https)
-    return proxy.to_dict if proxy else {"code": 0, "src": "no proxy"}
+    validator = httpsTimeOutValidator if https else httpTimeOutValidator
+    for _ in range(10):  # 最多尝试10次
+        proxy = proxy_handler.pop(https)
+        if proxy and validator(proxy.proxy):
+            return proxy.to_dict
+    return {"code": 0, "src": "no proxy"}
 
 
 @app.route('/refresh/')
