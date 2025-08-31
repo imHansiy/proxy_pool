@@ -59,7 +59,7 @@ class ProxyHandler(object):
         :param proxy:
         :return:
         """
-        return self.db.delete(proxy.proxy)
+        return self.db.delete(proxy)
 
     def getAll(self, https=False):
         """

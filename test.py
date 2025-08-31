@@ -12,20 +12,17 @@
 """
 __author__ = 'JHao'
 
-from test import testProxyValidator
-from test import testConfigHandler
-from test import testLogHandler
-from test import testDbClient
+import unittest
 
 if __name__ == '__main__':
-    print("ConfigHandler:")
-    testConfigHandler.testConfig()
-
-    print("LogHandler:")
-    testLogHandler.testLogHandler()
-
-    print("DbClient:")
-    testDbClient.testDbClient()
-
-    print("ProxyValidator:")
-    testProxyValidator.testProxyValidator()
+    # 创建一个测试加载器
+    loader = unittest.TestLoader()
+    
+    # 从 "test" 目录中发现所有测试
+    suite = loader.discover('test')
+    
+    # 创建一个测试运行器
+    runner = unittest.TextTestRunner()
+    
+    # 运行测试套件
+    runner.run(suite)

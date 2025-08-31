@@ -29,7 +29,6 @@ class ProxyFetcher(object):
     def __init__(self, strategy="all"):
         self.__proxies__ = []
         self.fetch_funcs = [
-            self.freeProxy05,
             self.freeProxy06,
             self.freeProxy07,
             self.freeProxy09,
@@ -37,25 +36,6 @@ class ProxyFetcher(object):
             # self.freeProxy11,
             self.freeProxy12,
         ]
-
-    @staticmethod
-    def freeProxy05(page_count=1):
-        """ 快代理 https://www.kuaidaili.com """
-        url_pattern = [
-            'https://www.kuaidaili.com/free/inha/{}/',
-            'https://www.kuaidaili.com/free/intr/{}/'
-        ]
-        url_list = []
-        for page_index in range(1, page_count + 1):
-            for pattern in url_pattern:
-                url_list.append(pattern.format(page_index))
-
-        for url in url_list:
-            tree = WebRequest().get(url).tree
-            proxy_list = tree.xpath('.//table//tr')
-            sleep(1)  # 必须sleep 不然第二条请求不到数据
-            for tr in proxy_list[1:]:
-                yield Proxy(':'.join(tr.xpath('./td/text()')[0:2]))
 
     @staticmethod
     def freeProxy06():
@@ -135,4 +115,3 @@ if __name__ == '__main__':
     for _ in p.freeProxy06():
         print(_)
 
-# http://nntime.com/proxy-list-01.htm

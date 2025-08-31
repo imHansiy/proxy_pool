@@ -31,8 +31,8 @@ class Proxy(object):
         self._https = https
         self._username = username
         self._password = password
-        if protocol == 'http' and 'socks' in proxy:
-            self._protocol = 'socks'
+        if 'socks' in protocol:
+            self._protocol = protocol.replace('socks', '')
         else:
             self._protocol = protocol
 

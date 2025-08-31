@@ -80,13 +80,13 @@ class RedisClient(object):
             self.__conn.hdel(self.name, json.loads(proxy).get("uri", ""))
         return proxy if proxy else None
 
-    def delete(self, proxy_obj):
+    def delete(self, proxy):
         """
         移除指定代理, 使用changeTable指定hash name
-        :param proxy_obj: proxy obj
+        :param proxy: proxy obj
         :return:
         """
-        return self.__conn.hdel(self.name, proxy_obj.uri)
+        return self.__conn.hdel(self.name, proxy.uri)
 
     def exists(self, proxy_obj):
         """
