@@ -73,14 +73,14 @@ class DoValidator(object):
     @classmethod
     def httpValidator(cls, proxy):
         for func in ProxyValidator.http_validator:
-            if not func(proxy.uri):
+            if not func(proxy):
                 return False
         return True
 
     @classmethod
     def httpsValidator(cls, proxy):
         for func in ProxyValidator.https_validator:
-            if not func(proxy.uri):
+            if not func(proxy):
                 return False
         return True
 
@@ -102,7 +102,7 @@ class DoValidator(object):
     def regionGetter(cls, proxy):
         try:
             url = 'https://searchplugin.csdn.net/api/v1/ip/get?ip=%s' % proxy.proxy.split(':')[0]
-            r = WebRequest().get(url=url, retry_time=1, timeout=2).json
+            r = WebRequest().get(url=url, proxy=proxy, retry_time=1, timeout=2).json
             return r['data']['address']
         except:
             return 'error'

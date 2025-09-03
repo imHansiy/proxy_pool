@@ -34,7 +34,6 @@ class ProxyFetcher(object):
             self.freeProxy09,
             self.freeProxy10,
             # self.freeProxy11,
-            self.freeProxy12,
         ]
 
     @staticmethod
@@ -91,36 +90,6 @@ class ProxyFetcher(object):
         except Exception as e:
             print(e)
 
-    @staticmethod
-    def freeProxy12():
-        """
-        https://francevpn.github.io/free-proxy
-        """
-        url = "https://francevpn.github.io/free-proxy/"
-        r = WebRequest().get(url, timeout=10)
-        soup = BeautifulSoup(r.text, 'html.parser')
-        
-        # get total page number
-        last_page_link = soup.find('ul', class_='pagination').find_all('a')[-2]
-        total_page = int(last_page_link.text)
-
-        for i in range(1, total_page + 1):
-            if i == 1:
-                page_url = "https://francevpn.github.io/free-proxy/"
-            else:
-                page_url = "https://francevpn.github.io/free-proxy/page-{}.htm".format(i)
-            
-            r = WebRequest().get(page_url, timeout=10)
-            soup = BeautifulSoup(r.text, 'html.parser')
-            table = soup.find('table', attrs={'class': 'table table-hover table-striped'})
-            for row in table.find('tbody').find_all('tr'):
-                columns = row.find_all('td')
-                if len(columns) > 5:
-                    ip = columns[0].text.strip()
-                    port = columns[1].text.strip()
-                    country = columns[4].text.strip()
-                    protocol = columns[5].text.strip().lower()
-                    yield Proxy(proxy='{}:{}'.format(ip, port), protocol=protocol, region=country, source="freeProxy12")
 
 if __name__ == '__main__':
     p = ProxyFetcher()

@@ -59,7 +59,7 @@ class WebRequest(object):
                 'Connection': 'keep-alive',
                 'Accept-Language': 'zh-CN,zh;q=0.8'}
 
-    def get(self, url, header=None, retry_time=3, retry_interval=5, timeout=5, *args, **kwargs):
+    def get(self, url, header=None, retry_time=3, retry_interval=5, timeout=5, proxy=None, *args, **kwargs):
         """
         get method
         :param url: target url
@@ -67,14 +67,29 @@ class WebRequest(object):
         :param retry_time: retry time
         :param retry_interval: retry interval
         :param timeout: network timeout
+        :param proxy: proxy
         :return:
         """
         headers = self.header
         if header and isinstance(header, dict):
             headers.update(header)
+
+        proxies = {}
+        if proxy:
+            if proxy.protocol.lower().startswith('http'):
+                proxies = {
+                    'http': f'http://{proxy.proxy}',
+                    'https': f'https://{proxy.proxy}'
+                }
+            elif proxy.protocol.lower().startswith('socks'):
+                proxies = {
+                    'http': f'{proxy.protocol}://{proxy.proxy}',
+                    'https': f'{proxy.protocol}://{proxy.proxy}'
+                }
+
         while True:
             try:
-                self.response = requests.get(url, headers=headers, timeout=timeout, *args, **kwargs)
+                self.response = requests.get(url, headers=headers, timeout=timeout, proxies=proxies, *args, **kwargs)
                 return self
             except Exception as e:
                 self.log.error("requests: %s error: %s" % (url, str(e)))

@@ -64,10 +64,15 @@ def formatValidator(proxy):
 from requests import get
 
 @ProxyValidator.addHttpValidator
-def httpTimeOutValidator(proxy):
+def httpTimeOutValidator(proxy_obj):
     """ http检测超时 """
+    proxy_str = proxy_obj.proxy
+    if proxy_obj.protocol.lower() == 'http':
+        proxy_str = f"http://{proxy_str}"
+    elif proxy_obj.protocol.lower() == 'https':
+        proxy_str = f"https://{proxy_str}"
 
-    proxies = {"http": proxy, "https": proxy}
+    proxies = {"http": proxy_str, "https": proxy_str}
 
     try:
         r = get(conf.httpUrl, headers=HEADER, proxies=proxies, timeout=conf.verifyTimeout)
@@ -79,10 +84,15 @@ def httpTimeOutValidator(proxy):
 
 
 @ProxyValidator.addHttpsValidator
-def httpsTimeOutValidator(proxy):
+def httpsTimeOutValidator(proxy_obj):
     """https检测超时"""
+    proxy_str = proxy_obj.proxy
+    if proxy_obj.protocol.lower() == 'http':
+        proxy_str = f"http://{proxy_str}"
+    elif proxy_obj.protocol.lower() == 'https':
+        proxy_str = f"https://{proxy_str}"
 
-    proxies = {"http": proxy, "https": proxy}
+    proxies = {"http": proxy_str, "https": proxy_str}
     try:
         r = get(conf.httpsUrl, headers=HEADER, proxies=proxies, timeout=conf.verifyTimeout, verify=False)
         if r.status_code == 200 and r.json().get("ip"):
@@ -101,12 +111,11 @@ def customValidatorExample(proxy):
 @ProxyValidator.addSocksValidator
 def socksTimeOutValidator(proxy_obj):
     """ socks检测超时 """
+    proxy_str = proxy_obj.proxy
     if proxy_obj.protocol.lower() == 'socks4':
-        proxy_str = f"socks4://{proxy_obj.proxy}"
+        proxy_str = f"socks4://{proxy_str}"
     elif proxy_obj.protocol.lower() == 'socks5':
-        proxy_str = f"socks5://{proxy_obj.proxy}"
-    else:
-        return False  # Or handle as an error
+        proxy_str = f"socks5://{proxy_str}"
 
     proxies = {'http': proxy_str, 'https': proxy_str}
     try:
