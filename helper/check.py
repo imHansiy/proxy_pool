@@ -87,7 +87,7 @@ class DoValidator(object):
     @classmethod
     def socksValidator(cls, proxy):
         for func in ProxyValidator.socks_validator:
-            if not func(proxy.uri):
+            if not func(proxy):
                 return False
         return True
 

@@ -101,7 +101,13 @@ def customValidatorExample(proxy):
 @ProxyValidator.addSocksValidator
 def socksTimeOutValidator(proxy_obj):
     """ socks检测超时 """
-    proxy_str = f"socks{proxy_obj.protocol}://{proxy_obj.proxy}"
+    if proxy_obj.protocol.lower() == 'socks4':
+        proxy_str = f"socks4://{proxy_obj.proxy}"
+    elif proxy_obj.protocol.lower() == 'socks5':
+        proxy_str = f"socks5://{proxy_obj.proxy}"
+    else:
+        return False  # Or handle as an error
+
     proxies = {'http': proxy_str, 'https': proxy_str}
     try:
         r = head(conf.httpsUrl, headers=HEADER, proxies=proxies, timeout=conf.verifyTimeout, verify=False)

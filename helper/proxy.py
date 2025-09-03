@@ -170,3 +170,9 @@ class Proxy(object):
         if source_str:
             self._source.append(source_str)
             self._source = list(set(self._source))
+
+    def __str__(self):
+        return "<Proxy({proxy})>".format(proxy=self.proxy)
+
+    def __repr__(self):
+        return "<Proxy({proxy})>".format(proxy=self.proxy)
