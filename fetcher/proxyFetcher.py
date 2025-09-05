@@ -14,8 +14,12 @@ __author__ = 'JHao'
 
 import re
 import json
+import sys
+import os
 from time import sleep
 from bs4 import BeautifulSoup
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from util.webRequest import WebRequest
 from helper.proxy import Proxy
@@ -34,6 +38,7 @@ class ProxyFetcher(object):
             self.freeProxy09,
             self.freeProxy10,
             # self.freeProxy11,
+            self.freeProxy12,
         ]
 
     @staticmethod
@@ -91,7 +96,37 @@ class ProxyFetcher(object):
             print(e)
 
 
+    @staticmethod
+    def freeProxy12(page_count=1):
+        """ 快代理 https://www.kuaidaili.com """
+        url_pattern = "https://www.kuaidaili.com/free/intr/{}/"
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'
+        }
+        for i in range(1, page_count + 1):
+            url = url_pattern.format(i)
+            try:
+                r = WebRequest().get(url, header=headers, timeout=10)
+                if not r:
+                    continue
+                soup = BeautifulSoup(r.text, 'html.parser')
+                table = soup.find('table')
+                if table:
+                    for tr in table.find('tbody').find_all('tr'):
+                        tds = tr.find_all('td')
+                        if len(tds) >= 7:
+                            ip = tds[0].text.strip()
+                            port = tds[1].text.strip()
+                            anonymous = tds[2].text.strip()
+                            protocol = tds[3].text.strip().lower()
+                            region = tds[4].text.strip()
+                            proxy = f"{ip}:{port}"
+                            yield Proxy(proxy=proxy, anonymous=anonymous, protocol=protocol, region=region, source="freeProxy12")
+            except Exception as e:
+                print("Failed to fetch from kuaidaili:", e)
+
+
 if __name__ == '__main__':
     p = ProxyFetcher()
-    for _ in p.freeProxy06():
+    for _ in p.freeProxy12():
         print(_)
