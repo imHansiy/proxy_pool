@@ -85,7 +85,8 @@ def httpTimeOutValidator(proxy_obj):
 
 @ProxyValidator.addHttpsValidator
 def httpsTimeOutValidator(proxy_obj):
-    """https检测超时"""
+    """HTTPS检测超时，使用Bing作为测试目标"""
+    test_url = "https://www.bing.com"
     proxy_str = proxy_obj.proxy
     if proxy_obj.protocol.lower() == 'http':
         proxy_str = f"http://{proxy_str}"
@@ -94,8 +95,9 @@ def httpsTimeOutValidator(proxy_obj):
 
     proxies = {"http": proxy_str, "https": proxy_str}
     try:
-        r = get(conf.httpsUrl, headers=HEADER, proxies=proxies, timeout=conf.verifyTimeout, verify=False)
-        if r.status_code == 200 and r.json().get("ip"):
+        # 使用requests库，timeout从conf.verifyTimeout获取
+        r = get(test_url, headers=HEADER, proxies=proxies, timeout=conf.verifyTimeout, verify=False)
+        if r.status_code == 200:
             return True
         return False
     except Exception as e:

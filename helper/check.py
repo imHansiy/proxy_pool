@@ -39,13 +39,14 @@ class DoValidator(object):
         Returns:
             Proxy Object
         """
-        valid_map = {
-            "http": cls.httpValidator,
-            "https": cls.httpsValidator,
-            "socks": cls.socksValidator,
-        }
-        validator = valid_map.get(proxy.protocol)
-        if not validator:
+        # 优先使用https验证
+        if proxy.protocol.lower() == 'https':
+            validator = cls.httpsValidator
+        elif proxy.protocol.lower() == 'http':
+            validator = cls.httpValidator
+        elif proxy.protocol.lower().startswith('socks'):
+            validator = cls.socksValidator
+        else:
             # 默认使用http验证
             validator = cls.httpValidator
 
@@ -101,11 +102,19 @@ class DoValidator(object):
     @classmethod
     def regionGetter(cls, proxy):
         try:
-            url = 'https://searchplugin.csdn.net/api/v1/ip/get?ip=%s' % proxy.proxy.split(':')[0]
-            r = WebRequest().get(url=url, proxy=proxy, retry_time=1, timeout=2).json
-            return r['data']['address']
-        except:
-            return 'error'
+            ip = proxy.proxy.split(':')[0]
+            url = f'https://api.ip.sb/geoip/{ip}'
+            r = WebRequest().get(url=url, retry_time=3, timeout=5).json # 增加重试次数和超时时间
+            country = r.get('country', '')
+            city = r.get('city', '')
+            if country and city:
+                return f"{country} {city}"
+            elif country:
+                return country
+            else:
+                return '未知地区'
+        except Exception as e:
+            return f"获取地区失败: {e}"
 
 
 class _ThreadChecker(Thread):

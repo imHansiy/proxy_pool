@@ -33,11 +33,6 @@ class ProxyFetcher(object):
     def __init__(self, strategy="all"):
         self.__proxies__ = []
         self.fetch_funcs = [
-            self.freeProxy06,
-            self.freeProxy07,
-            self.freeProxy09,
-            self.freeProxy10,
-            # self.freeProxy11,
             self.freeProxy12,
         ]
 
@@ -97,33 +92,39 @@ class ProxyFetcher(object):
 
 
     @staticmethod
-    def freeProxy12(page_count=1):
-        """ 快代理 https://www.kuaidaili.com """
-        url_pattern = "https://www.kuaidaili.com/free/intr/{}/"
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'
-        }
-        for i in range(1, page_count + 1):
-            url = url_pattern.format(i)
+    def freeProxy12():
+        """
+        快代理 (通过解析内嵌JS数据获取) https://www.kuaidaili.com/free/intr/{page}/
+        """
+        # 遍历前三页
+        for page in range(1, 4):
+            url = f"https://www.kuaidaili.com/free/intr/{page}/"
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'
+            }
             try:
                 r = WebRequest().get(url, header=headers, timeout=10)
-                if not r:
-                    continue
-                soup = BeautifulSoup(r.text, 'html.parser')
-                table = soup.find('table')
-                if table:
-                    for tr in table.find('tbody').find_all('tr'):
-                        tds = tr.find_all('td')
-                        if len(tds) >= 7:
-                            ip = tds[0].text.strip()
-                            port = tds[1].text.strip()
-                            anonymous = tds[2].text.strip()
-                            protocol = tds[3].text.strip().lower()
-                            region = tds[4].text.strip()
-                            proxy = f"{ip}:{port}"
-                            yield Proxy(proxy=proxy, anonymous=anonymous, protocol=protocol, region=region, source="freeProxy12")
+                if not r or not r.text:
+                    continue  # 继续尝试下一页
+
+                # 使用正则表达式提取 const fpsList = [...] 的内容
+                match = re.search(r'const fpsList = (\[.*?\]);', r.text, re.DOTALL)
+                if match:
+                    json_str = match.group(1)
+                    data_list = json.loads(json_str)
+
+                    for item in data_list:
+                        ip = item.get('ip')
+                        port = item.get('port')
+                        region = item.get('location', '')
+                        anonymous = '高匿名'
+                        protocol = 'http'
+
+                        if ip and port:
+                            proxy_str = f"{ip}:{port}"
+                            yield Proxy(proxy=proxy_str, region=region, anonymous=anonymous, protocol=protocol, source="freeProxy12")
             except Exception as e:
-                print("Failed to fetch from kuaidaili:", e)
+                print(f"Failed to fetch from freeProxy12 page {page}: {e}")
 
 
 if __name__ == '__main__':

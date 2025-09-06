@@ -77,7 +77,7 @@ def get():
     validator = httpsTimeOutValidator if https else httpTimeOutValidator
     for _ in range(10):  # 最多尝试10次
         proxy = proxy_handler.get(https)
-        if proxy and validator(proxy.proxy):
+        if proxy and validator(proxy): # 将整个Proxy对象传递给validator
             return proxy.to_dict
     return {"code": 0, "src": "no proxy"}
 
@@ -88,7 +88,7 @@ def pop():
     validator = httpsTimeOutValidator if https else httpTimeOutValidator
     for _ in range(10):  # 最多尝试10次
         proxy = proxy_handler.pop(https)
-        if proxy and validator(proxy.proxy):
+        if proxy and validator(proxy): # 将整个Proxy对象传递给validator
             return proxy.to_dict
     return {"code": 0, "src": "no proxy"}
 
