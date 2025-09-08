@@ -70,9 +70,18 @@ class WebRequest(object):
         :param proxy: proxy
         :return:
         """
-        headers = self.header
-        if header and isinstance(header, dict):
-            headers.update(header)
+        if header is None:
+            headers = self.header
+        elif isinstance(header, dict):
+            headers = header
+            # 如果传入的header是空字典，则不添加任何默认headers
+            if not headers and not ('User-Agent' in headers):
+                pass
+            # 如果传入的header不为空，但没有User-Agent，则添加一个默认的User-Agent
+            elif 'User-Agent' not in headers:
+                headers['User-Agent'] = self.user_agent
+        else:
+            headers = self.header # fallback to default if header is not a dict or None
 
         proxies = {}
         if proxy:

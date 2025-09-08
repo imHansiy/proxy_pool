@@ -37,18 +37,6 @@ class ProxyFetcher(object):
         ]
 
     @staticmethod
-    def freeProxy06():
-        """ 冰凌代理 https://www.binglx.cn """
-        url = "https://www.binglx.cn/?page=1"
-        try:
-            tree = WebRequest().get(url).tree
-            proxy_list = tree.xpath('.//table//tr')
-            for tr in proxy_list[1:]:
-                yield Proxy(':'.join(tr.xpath('./td/text()')[0:2]))
-        except Exception as e:
-            print(e)
-
-    @staticmethod
     def freeProxy07():
         """ 云代理 """
         urls = ['http://www.ip3366.net/free/?stype=1', "http://www.ip3366.net/free/?stype=2"]
@@ -57,18 +45,6 @@ class ProxyFetcher(object):
             proxies = re.findall(r'<td>(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})</td>[\s\S]*?<td>(\d+)</td>', r.text)
             for proxy in proxies:
                 yield Proxy(":".join(proxy))
-
-
-    @staticmethod
-    def freeProxy09(page_count=1):
-        """ 免费代理库 """
-        for i in range(1, page_count + 1):
-            url = 'http://ip.jiangxianli.com/?country=中国&page={}'.format(i)
-            html_tree = WebRequest().get(url, verify=False).tree
-            for index, tr in enumerate(html_tree.xpath("//table//tr")):
-                if index == 0:
-                    continue
-                yield Proxy(":".join(tr.xpath("./td/text()")[0:2]).strip())
 
     @staticmethod
     def freeProxy10():
@@ -94,37 +70,80 @@ class ProxyFetcher(object):
     @staticmethod
     def freeProxy12():
         """
-        快代理 (通过解析内嵌JS数据获取) https://www.kuaidaili.com/free/intr/{page}/
+        快代理 (通过解析内嵌JS数据获取)
+        同时抓取国内代理 (https://www.kuaidaili.com/free/intr/{page}/)
+        和海外免费代理 (https://www.kuaidaili.com/free/fps/{page}/)
         """
-        # 遍历前三页
-        for page in range(1, 4):
-            url = f"https://www.kuaidaili.com/free/intr/{page}/"
-            headers = {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'
-            }
-            try:
-                r = WebRequest().get(url, header=headers, timeout=10)
-                if not r or not r.text:
-                    continue  # 继续尝试下一页
+        url_patterns = [
+            "https://www.kuaidaili.com/free/intr/{}/",  # 国内免费代理
+            "https://www.kuaidaili.com/free/fps/{}/"    # 海外免费代理
+        ]
 
-                # 使用正则表达式提取 const fpsList = [...] 的内容
-                match = re.search(r'const fpsList = (\[.*?\]);', r.text, re.DOTALL)
-                if match:
-                    json_str = match.group(1)
-                    data_list = json.loads(json_str)
+        # 遍历前三页和两种URL模式
+        for url_pattern in url_patterns:
+            for page in range(1, 4):
+                url = url_pattern.format(page)
+                try:
+                    headers_fps = {
+                        'User-Agent': 'Apifox/1.0.0 (https://apifox.com)',
+                        'Accept': '*/*',
+                        'Host': 'www.kuaidaili.com',
+                        'Connection': 'keep-alive',
+                        'Cookie': 'channelid=0; sid=1757151338733991'
+                    }
+                    if "intr" in url:
+                        r = WebRequest().get(url, timeout=15, retry_time=1) # intr 页面继续使用默认headers
+                    else: # fps 页面使用提供的headers
+                        r = WebRequest().get(url, header=headers_fps, timeout=15, retry_time=1)
+                    if not r or not r.text:
+                        print(f"Failed to get content from {url}")
+                        sleep(2) # 增加延时，防止被反爬
+                        continue  # 继续尝试下一页或下一个模式
 
-                    for item in data_list:
-                        ip = item.get('ip')
-                        port = item.get('port')
-                        region = item.get('location', '')
-                        anonymous = '高匿名'
-                        protocol = 'http'
-
-                        if ip and port:
-                            proxy_str = f"{ip}:{port}"
-                            yield Proxy(proxy=proxy_str, region=region, anonymous=anonymous, protocol=protocol, source="freeProxy12")
-            except Exception as e:
-                print(f"Failed to fetch from freeProxy12 page {page}: {e}")
+                    if "intr" in url: # 国内代理仍然使用fpsList解析
+                        print(f"--- Content from {url} (first 500 chars) ---")
+                        print(r.text[:500])
+                        print(f"--- End Content from {url} ---")
+                        match = re.search(r'const fpsList = (\[.*?\]);', r.text, re.DOTALL)
+                        if match:
+                            json_str = match.group(1)
+                            data_list = json.loads(json_str)
+                            print(f"成功从 {url} 获取到 {len(data_list)} 个代理。") # 打印获取数量
+                            for item in data_list:
+                                ip = item.get('ip')
+                                port = item.get('port')
+                                region = item.get('location', '')
+                                anonymous = '高匿名'
+                                protocol = 'http'
+                                if ip and port:
+                                    proxy_str = f"{ip}:{port}"
+                                    yield Proxy(proxy=proxy_str, region=region, anonymous=anonymous, protocol=protocol, source="freeProxy12")
+                        else:
+                            print(f"未能在 {url} 中找到 'const fpsList' 结构。")
+                    elif "fps" in url: # 海外代理也尝试使用fpsList解析
+                        print(f"--- Content from {url} (first 500 chars) ---")
+                        print(r.text[:500])
+                        print(f"--- End Content from {url} ---")
+                        match = re.search(r'const fpsList = (\[.*?\]);', r.text, re.DOTALL)
+                        if match:
+                            json_str = match.group(1)
+                            data_list = json.loads(json_str)
+                            print(f"成功从 {url} 获取到 {len(data_list)} 个代理。")
+                            for item in data_list:
+                                ip = item.get('ip')
+                                port = item.get('port')
+                                region = item.get('location', '')
+                                anonymous = '高匿名'
+                                protocol = 'http'
+                                if ip and port:
+                                    proxy_str = f"{ip}:{port}"
+                                    yield Proxy(proxy=proxy_str, region=region, anonymous=anonymous, protocol=protocol, source="freeProxy12")
+                        else:
+                            print(f"未能在 {url} 中找到 'const fpsList' 结构。")
+                except Exception as e:
+                    print(f"Failed to fetch from {url}: {e}")
+                finally:
+                    sleep(1) # 增加延时，防止被反爬
 
 
 if __name__ == '__main__':
