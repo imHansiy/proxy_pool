@@ -50,9 +50,9 @@ PROXY_FETCHER = [
 
 # ############# proxy validator #################
 # 代理验证目标网站
-HTTP_URL = "http://httpbin.org/ip" # 更换为更稳定的测试地址
+HTTP_URL = "http://www.baidu.com" # 更换为更稳定的测试地址
 
-HTTPS_URL = "https://httpbin.org/get" # 保持不变，或者也可以更换
+HTTPS_URL = "https://www.google.com" # 保持不变，或者也可以更换
 
 HTTPS_TEST_URL = "https://www.baidu.com" # 更换为更稳定的测试地址
 
