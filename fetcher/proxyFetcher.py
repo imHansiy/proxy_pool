@@ -36,6 +36,7 @@ class ProxyFetcher(object):
             self.freeProxy11,
             self.freeProxy12,
             self.freeProxy13,
+            self.freeProxy14,  # 新添加的代理源
         ]
 
     @staticmethod
@@ -184,6 +185,67 @@ class ProxyFetcher(object):
                 print(f"Failed to fetch from {url}: {e}")
             finally:
                 sleep(1)
+
+    @staticmethod
+    def freeProxy14():
+        """
+        Luminati Proxy https://api.lumiproxy.com/web_v1/free-proxy/list
+        """
+        url = "https://api.lumiproxy.com/web_v1/free-proxy/list?page_size=1710&page=1"
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'
+        }
+        
+        try:
+            r = WebRequest().get(url, header=headers, timeout=10)
+            if r and r.json:
+                data = r.json
+                if data.get("code") == 200:
+                    proxy_list = data.get("data", {}).get("list", [])
+                    for item in proxy_list:
+                        ip = item.get("ip")
+                        port = item.get("port")
+                        protocol = item.get("protocol")
+                        country_code = item.get("country_code")
+                        city = item.get("city")
+                        anonymity = item.get("anonymity")
+                        
+                        # 处理协议字段
+                        if protocol == 1:
+                            protocol_str = "http"
+                        elif protocol == 2:
+                            protocol_str = "https"
+                        elif protocol == 3:
+                            protocol_str = "socks5"
+                        else:
+                            protocol_str = "http"  # 默认值
+                            
+                        # 处理匿名性字段
+                        if anonymity == 1:
+                            anonymous_str = "透明"
+                        elif anonymity == 2:
+                            anonymous_str = "高匿"
+                        else:
+                            anonymous_str = "未知"
+                            
+                        # 构造地区信息
+                        region_str = f"{country_code} {city}" if country_code and city else (country_code or "未知")
+                        
+                        if ip and port:
+                            proxy_str = f"{ip}:{port}"
+                            yield Proxy(
+                                proxy=proxy_str,
+                                region=region_str,
+                                anonymous=anonymous_str,
+                                protocol=protocol_str,
+                                source="freeProxy14"
+                            )
+                else:
+                    print(f"Failed to fetch from Luminati Proxy: HTTP {data.get('code')}")
+            else:
+                print("Failed to fetch from Luminati Proxy: Empty response")
+        except Exception as e:
+            print(f"Failed to fetch from Luminati Proxy: {e}")
 
 
 if __name__ == '__main__':
