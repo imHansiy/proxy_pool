@@ -37,26 +37,6 @@ class ProxyFetcher(object):
         ]
 
     @staticmethod
-    def freeProxy07():
-        """ 云代理 """
-        urls = ['http://www.ip3366.net/free/?stype=1', "http://www.ip3366.net/free/?stype=2"]
-        for url in urls:
-            r = WebRequest().get(url, timeout=10)
-            proxies = re.findall(r'<td>(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})</td>[\s\S]*?<td>(\d+)</td>', r.text)
-            for proxy in proxies:
-                yield Proxy(":".join(proxy))
-
-    @staticmethod
-    def freeProxy10():
-        """ 89免费代理 """
-        r = WebRequest().get("https://www.89ip.cn/index_1.html", timeout=10)
-        proxies = re.findall(
-            r'<td.*?>[\s\S]*?(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})[\s\S]*?</td>[\s\S]*?<td.*?>[\s\S]*?(\d+)[\s\S]*?</td>',
-            r.text)
-        for proxy in proxies:
-            yield Proxy(':'.join(proxy))
-
-    @staticmethod
     def freeProxy11():
         """ 稻壳代理 https://www.docip.net/ """
         r = WebRequest().get("https://www.docip.net/data/free.json", timeout=10)
@@ -65,7 +45,6 @@ class ProxyFetcher(object):
                 yield Proxy(each['ip'])
         except Exception as e:
             print(e)
-
 
     @staticmethod
     def freeProxy12():

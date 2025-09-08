@@ -45,19 +45,17 @@ TABLE_NAME = 'use_proxy'
 
 # ###### config the proxy fetch function ######
 PROXY_FETCHER = [
-    "freeProxy7",
-    "freeProxy10",
     "freeProxy11",
     "freeProxy12",
 ]
 
 # ############# proxy validator #################
 # 代理验证目标网站
-HTTP_URL = "http://iprust.io/ip.json"
+HTTP_URL = "http://httpbin.org/ip" # 更换为更稳定的测试地址
 
-HTTPS_URL = "https://httpbin.org/get"
+HTTPS_URL = "https://httpbin.org/get" # 保持不变，或者也可以更换
 
-HTTPS_TEST_URL = "https://www.qq.com"
+HTTPS_TEST_URL = "https://www.baidu.com" # 更换为更稳定的测试地址
 
 # 代理验证时超时时间
 VERIFY_TIMEOUT = 5
