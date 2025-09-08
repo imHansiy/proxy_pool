@@ -42,16 +42,14 @@ class ConfigHandler(withMetaclass(Singleton)):
 
     @property
     @LazyProperty
-    def proxyFetchers(self):
+    def fetchers(self):
+        reload_six(setting) # 确保最新的设置被加载
         proxy_fetcher_str = os.getenv("PROXY_FETCHER")
         if proxy_fetcher_str:
+            # 如果环境变量存在，解析并返回列表
             return [f.strip() for f in proxy_fetcher_str.split(',') if f.strip()]
+        # 否则，返回 setting.py 中的默认值
         return setting.PROXY_FETCHER
-
-    @property
-    def fetchers(self):
-        reload_six(setting)
-        return self.proxyFetchers
 
     @LazyProperty
     def httpUrl(self):
