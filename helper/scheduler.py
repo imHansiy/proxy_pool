@@ -50,6 +50,8 @@ def runScheduler(now=False):
     log = LogHandler("scheduler")
     log.info("Starting scheduler...")
 
+    conf = ConfigHandler()
+
     while True:
         log.info("Starting proxy fetch...")
         __runProxyFetch()
@@ -59,8 +61,8 @@ def runScheduler(now=False):
         __runProxyCheck()
         log.info("Proxy check finished.")
 
-        log.info("Scheduler sleeping for 1 second...")
-        time.sleep(1)
+        log.info(f"Scheduler sleeping for {conf.fetcherInterval} seconds...")
+        time.sleep(conf.fetcherInterval)
 
 
 if __name__ == '__main__':

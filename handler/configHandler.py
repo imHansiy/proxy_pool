@@ -81,3 +81,7 @@ class ConfigHandler(withMetaclass(Singleton)):
     def timezone(self):
         return os.getenv("TIMEZONE", setting.TIMEZONE)
 
+    @LazyProperty
+    def fetcherInterval(self):
+        return int(os.getenv("FETCHER_INTERVAL", setting.FETCHER_INTERVAL))
+

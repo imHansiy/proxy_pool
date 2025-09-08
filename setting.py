@@ -83,3 +83,6 @@ PROXY_REGION = True
 # Otherwise it will detect the timezone from the system automatically.
 
 TIMEZONE = "Asia/Shanghai"
+
+# The interval (in seconds) between two fetch tasks
+FETCHER_INTERVAL = 1800

@@ -31,10 +31,7 @@ class Proxy(object):
         self._https = https
         self._username = username
         self._password = password
-        if 'socks' in protocol:
-            self._protocol = protocol.replace('socks', '')
-        else:
-            self._protocol = protocol
+        self._protocol = protocol
 
     @classmethod
     def createFromJson(cls, proxy_json):

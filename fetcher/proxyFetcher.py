@@ -35,6 +35,7 @@ class ProxyFetcher(object):
         self.fetch_funcs = [
             self.freeProxy11,
             self.freeProxy12,
+            self.freeProxy13,
         ]
 
     @staticmethod
@@ -124,6 +125,65 @@ class ProxyFetcher(object):
                     print(f"Failed to fetch from {url}: {e}")
                 finally:
                     sleep(1) # 增加延时，防止被反爬
+
+    @staticmethod
+    def freeProxy13():
+        """
+        ProxyMist 代理 https://proxymist.com/zh/protocols/
+        """
+        urls = [
+            "https://proxymist.com/zh/protocols/socks5/",
+            "https://proxymist.com/zh/protocols/socks4/",
+            "https://proxymist.com/zh/protocols/http/"
+        ]
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'
+        }
+
+        for url in urls:
+            try:
+                r = WebRequest().get(url, header=headers, timeout=10)
+                soup = BeautifulSoup(r.text, 'html.parser')
+                table = soup.find('table', attrs={'id': 'proxylister-table'})
+                if not table:
+                    print(f"未在 {url} 中找到代理表格。")
+                    continue
+
+                for tr in table.find('tbody').find_all('tr'):
+                    tds = tr.find_all('td')
+                    if len(tds) >= 5:
+                        ip = tds[0].text.strip()
+                        port = tds[1].text.strip()
+                        protocol_raw = tds[2].text.strip().lower()
+                        # 将全角逗号和中文顿号替换为半角逗号，然后分割，只取第一个协议
+                        protocol_raw = protocol_raw.replace('，', ',').replace('、', ',')
+                        if ',' in protocol_raw:
+                            protocol = protocol_raw.split(',')[0].strip()
+                        else:
+                            protocol = protocol_raw
+                        
+                        # 确保协议是 'http', 'https', 'socks4', 'socks5' 中的一种
+                        if 'http' in protocol:
+                            protocol = 'http'
+                        elif 'https' in protocol:
+                            protocol = 'https'
+                        elif 'socks4' in protocol:
+                            protocol = 'socks4'
+                        elif 'socks5' in protocol:
+                            protocol = 'socks5'
+                        else:
+                            protocol = 'http' # 默认设置为http
+                        
+                        anonymous = tds[3].text.strip()
+                        region_div = tds[4].find('div', class_='px-2')
+                        region = region_div.find('strong').text.strip() + ' ' + region_div.find_all('br')[-1].next_sibling.strip() if region_div and region_div.find('strong') else ''
+
+                        proxy_str = f"{ip}:{port}"
+                        yield Proxy(proxy=proxy_str, region=region, anonymous=anonymous, protocol=protocol, source="freeProxy13")
+            except Exception as e:
+                print(f"Failed to fetch from {url}: {e}")
+            finally:
+                sleep(1)
 
 
 if __name__ == '__main__':
