@@ -33,7 +33,8 @@ class ProxyFetcher(object):
     def __init__(self, strategy="all"):
         self.__proxies__ = []
         self.fetch_funcs = [
-            self.freeProxy12,
+            self.freeProxy11,
+            # self.freeProxy12, # Temporarily disable freeProxy12 due to anti-scraping
         ]
 
     @staticmethod
