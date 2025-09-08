@@ -41,14 +41,11 @@ class ConfigHandler(withMetaclass(Singleton)):
         return os.getenv("TABLE_NAME", setting.TABLE_NAME)
 
     @property
-    @LazyProperty
     def fetchers(self):
-        reload_six(setting) # 确保最新的设置被加载
+        # 移除 reload_six(setting)
         proxy_fetcher_str = os.getenv("PROXY_FETCHER")
         if proxy_fetcher_str:
-            # 如果环境变量存在，解析并返回列表
             return [f.strip() for f in proxy_fetcher_str.split(',') if f.strip()]
-        # 否则，返回 setting.py 中的默认值
         return setting.PROXY_FETCHER
 
     @LazyProperty
