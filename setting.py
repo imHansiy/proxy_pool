@@ -46,6 +46,7 @@ TABLE_NAME = 'use_proxy'
 # ###### config the proxy fetch function ######
 PROXY_FETCHER = [
     "freeProxy11",
+    "freeProxy12",
 ]
 
 # ############# proxy validator #################

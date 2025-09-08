@@ -34,7 +34,7 @@ class ProxyFetcher(object):
         self.__proxies__ = []
         self.fetch_funcs = [
             self.freeProxy11,
-            # self.freeProxy12, # Temporarily disable freeProxy12 due to anti-scraping
+            self.freeProxy12,
         ]
 
     @staticmethod
@@ -45,7 +45,7 @@ class ProxyFetcher(object):
             for each in r.json['data']:
                 yield Proxy(each['ip'])
         except Exception as e:
-            print(e)
+            print(f"Error fetching from docip.net: {e}. Response text: {r.text[:200]}") # 打印更多错误信息
 
     @staticmethod
     def freeProxy12():
