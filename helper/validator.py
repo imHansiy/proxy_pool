@@ -75,8 +75,8 @@ def httpTimeOutValidator(proxy_obj):
     proxies = {"http": proxy_str, "https": proxy_str}
 
     try:
-        r = get(conf.httpUrl, headers=HEADER, proxies=proxies, timeout=conf.verifyTimeout)
-        if r.status_code == 200 and r.json().get("ip"):
+        r = get("http://httpbin.org/ip", headers=HEADER, proxies=proxies, timeout=conf.verifyTimeout)
+        if r.status_code == 200 and r.json().get("origin"):
             return True
         return False
     except Exception as e:
